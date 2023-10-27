@@ -10,6 +10,9 @@ This repository contains a Unity package that automatically installs the latest 
 3. Wait for the installation to finish.
 
 ## Changelog
+### v3
+- Added Tools -> Reinstall ThunderKit menu item
+- No longer automatically installs itself
 ### v2
 - Added support for Unity 2022.3.5
 - Updated ThunderKit source from 8.0.3 to master branch

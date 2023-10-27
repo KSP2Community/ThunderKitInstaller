@@ -10,16 +10,22 @@ public class Startup
 {
     public static List<string> Packages { get; set; } = new List<string>() {
 #if UNITY_2020_3_33
-        "com.unity.ui",
-        "com.unity.ui.builder",
+        "com.unity.ui", 
+        "com.unity.ui.builder", 
 #endif
         "com.unity.burst",
-        "com.unity.inputsystem"
+        "com.unity.inputsystem" 
     };
 
     static Startup()
     {
         EditorApplication.update += ExecuteCoroutine;
+        // StartCoroutine(InstallPackages());
+    }
+
+    [MenuItem("Tools/Reinstall Thunderkit")]
+    static void ReinstallThunderKit()
+    {
         StartCoroutine(InstallPackages());
     }
 
@@ -29,7 +35,7 @@ public class Startup
         return newCorou;
     }
 
-    private static List<IEnumerator> CoroutineInProgress = new();
+    private static readonly List<IEnumerator> CoroutineInProgress = new();
 
     static int currentExecute = 0;
     private static void ExecuteCoroutine()
@@ -47,18 +53,18 @@ public class Startup
 
     private static IEnumerator InstallPackages()
     {
-        if(!EditorUtility.DisplayDialog($"Install Thunderkit?",
-            "Do you want to run this installer?",
-            "Install", "Skip"))
-            {
-
-            if (EditorUtility.DisplayDialog($"Remove Installer?",
-                "Do you want to remove this installer package?", "Delete", "Skip") &&
-                AssetDatabase.DeleteAsset("Assets/Thunderkit Installer"))
-                Debug.Log($"Installer Removed.");
-
-            yield break;
-        }
+        // if(!EditorUtility.DisplayDialog($"Install Thunderkit?", 
+        //     "Do you want to run this installer?", 
+        //     "Install", "Skip"))
+        //     {
+        //
+        //     if (EditorUtility.DisplayDialog($"Remove Installer?", 
+        //         "Do you want to remove this installer package?", "Delete", "Skip") && 
+        //         AssetDatabase.DeleteAsset("Assets/Thunderkit Installer"))
+        //         Debug.Log($"Installer Removed.");
+        //
+        //     yield break;
+        // }
 
         var listRequest = Client.List(true, false);
         while(!listRequest.IsCompleted)
@@ -69,7 +75,6 @@ public class Startup
         if(listRequest.Status == StatusCode.Success)
         {
             var collection = listRequest.Result;
-
 
             if(!collection.Any(x => x.packageId.StartsWith("com.passivepicasso.thunderkit")))
             {
@@ -113,10 +118,10 @@ public class Startup
                     Debug.Log($"{package} found.");
                 }
             }
-
-            if(EditorUtility.DisplayDialog($"Remove Installer?", "Do you want to remove this installer package now that it has completed its work?", "Delete", "Skip") && AssetDatabase.DeleteAsset("Assets/Thunderkit Installer - KSP2"))
-                Debug.Log($"Installer Removed.");
-
+            
+            EditorUtility.DisplayDialog("Reinstallation Complete", "The reinstallation of thunderkit has succeeded",
+                "ok");
+            
             Debug.Log($"Installation Complete.");
             yield break;
         }
