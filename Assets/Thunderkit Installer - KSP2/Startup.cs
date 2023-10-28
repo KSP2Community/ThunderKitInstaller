@@ -10,11 +10,11 @@ public class Startup
 {
     public static List<string> Packages { get; set; } = new List<string>() {
 #if UNITY_2020_3_33
-        "com.unity.ui", 
-        "com.unity.ui.builder", 
+        "com.unity.ui",
+        "com.unity.ui.builder",
 #endif
         "com.unity.burst",
-        "com.unity.inputsystem" 
+        "com.unity.inputsystem"
     };
 
     static Startup()
@@ -27,6 +27,7 @@ public class Startup
     static void ReinstallThunderKit()
     {
         StartCoroutine(InstallPackages());
+        // EditorUtility.RequestScriptReload();
     }
 
     private static IEnumerator StartCoroutine(IEnumerator newCorou)
@@ -53,13 +54,13 @@ public class Startup
 
     private static IEnumerator InstallPackages()
     {
-        // if(!EditorUtility.DisplayDialog($"Install Thunderkit?", 
-        //     "Do you want to run this installer?", 
+        // if(!EditorUtility.DisplayDialog($"Install Thunderkit?",
+        //     "Do you want to run this installer?",
         //     "Install", "Skip"))
         //     {
         //
-        //     if (EditorUtility.DisplayDialog($"Remove Installer?", 
-        //         "Do you want to remove this installer package?", "Delete", "Skip") && 
+        //     if (EditorUtility.DisplayDialog($"Remove Installer?",
+        //         "Do you want to remove this installer package?", "Delete", "Skip") &&
         //         AssetDatabase.DeleteAsset("Assets/Thunderkit Installer"))
         //         Debug.Log($"Installer Removed.");
         //
@@ -95,7 +96,12 @@ public class Startup
         }
 
         listRequest = Client.List(true, false);
-        
+
+        while(!listRequest.IsCompleted)
+        {
+            yield return null;
+        }
+
         if (listRequest.Status == StatusCode.Success)
         {
             var collection = listRequest.Result;
@@ -141,10 +147,10 @@ public class Startup
                     Debug.Log($"{package} found.");
                 }
             }
-            
+
             EditorUtility.DisplayDialog("Reinstallation Complete", "The reinstallation of thunderkit has succeeded",
                 "ok");
-            
+
             Debug.Log($"Installation Complete.");
             yield break;
         }
