@@ -72,10 +72,33 @@ public class Startup
             yield return null;
         }
 
-        if(listRequest.Status == StatusCode.Success)
+        if (listRequest.Status == StatusCode.Success)
         {
             var collection = listRequest.Result;
 
+            if (collection.Any(x => x.packageId.StartsWith("com.passivepicasso.thunderkit")))
+            {
+                var result = Client.Remove(collection
+                    .Where(x => x.packageId.StartsWith("com.passivepicasso.thunderkit"))
+                    .Select(x => x.name).FirstOrDefault());
+                while (!result.IsCompleted)
+                {
+                    yield return null;
+                }
+
+                if (result.Status != StatusCode.Success)
+                {
+                    Debug.Log(result.Error.message);
+                    yield break;
+                }
+            }
+        }
+
+        listRequest = Client.List(true, false);
+        
+        if (listRequest.Status == StatusCode.Success)
+        {
+            var collection = listRequest.Result;
             if(!collection.Any(x => x.packageId.StartsWith("com.passivepicasso.thunderkit")))
             {
                 var result = Client.Add("https://github.com/PassivePicasso/ThunderKit.git");
@@ -91,7 +114,7 @@ public class Startup
                 }
 
                 Debug.Log($"Installed {"https://github.com/PassivePicasso/ThunderKit.git"}.");
-                yield break;
+                yield return null;
             }
 
             for(int i = 0; i < Packages.Count; i++)
