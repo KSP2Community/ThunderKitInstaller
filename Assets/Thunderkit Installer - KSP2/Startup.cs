@@ -115,7 +115,7 @@ public class Startup
 
                 if(result.Status != StatusCode.Success)
                 {
-                    Debug.Log(result.Error);
+                    Debug.Log(result.Error.message);
                     yield break;
                 }
 
@@ -136,7 +136,7 @@ public class Startup
 
                     if(result.Status != StatusCode.Success)
                     {
-                        Debug.Log(result.Error);
+                        Debug.Log(result.Error.message);
                         yield break;
                     }
 
